@@ -12,6 +12,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative;
         }
         #prize-list {
             text-align: left;
@@ -26,10 +27,14 @@
         #prize-list p {
             margin: 5px 0;
         }
-        canvas { border: 4px solid #333; background: white; border-radius: 50%; }
+        canvas {
+            border: 4px solid #333;
+            background: white;
+            border-radius: 50%;
+        }
         #pointer {
             position: absolute;
-            top: 180px;
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -37,6 +42,7 @@
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
             border-bottom: 30px solid red;
+            z-index: 10;
         }
         button {
             margin-top: 20px;
@@ -152,32 +158,15 @@
             spinning = true;
 
             let spinAngle = Math.random() * 360 + 360 * 5;
-            let finalAngle = angle + spinAngle;
-            let duration = 3000;
-            let startTime = null;
+            let finalAngle = spinAngle % 360;
+            let sliceAngle = 360 / prizes.length;
+            let winningIndex = Math.floor((360 - finalAngle + sliceAngle / 2) % 360 / sliceAngle);
 
-            function animate(currentTime) {
-                if (!startTime) startTime = currentTime;
-                let progress = (currentTime - startTime) / duration;
-                if (progress < 1) {
-                    angle += (finalAngle - angle) * 0.05;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.save();
-                    ctx.translate(150, 150);
-                    ctx.rotate(angle * Math.PI / 180);
-                    ctx.translate(-150, -150);
-                    drawWheel();
-                    ctx.restore();
-                    requestAnimationFrame(animate);
-                } else {
-                    let index = Math.floor(((360 - (angle % 360)) / 36) % 10);
-                    resultDisplay.innerText = `結果：${prizes[index]} 🎉`;
-                    setCookie("roulettePlayed", new Date().toDateString(), 1);
-                    spinning = false;
-                }
-            }
-
-            requestAnimationFrame(animate);
+            setTimeout(() => {
+                resultDisplay.innerText = `結果：${prizes[winningIndex]} 🎉`;
+                setCookie("roulettePlayed", new Date().toDateString(), 1);
+                spinning = false;
+            }, 3000);
         });
     </script>
 </body>
