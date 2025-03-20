@@ -31,7 +31,7 @@
             border: 4px solid #333;
             background: white;
             border-radius: 50%;
-            margin-top: 40px; /* 三角との距離を確保 */
+            margin-top: 40px;
         }
         #pointer {
             position: absolute;
@@ -42,7 +42,7 @@
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-top: 30px solid red; /* 三角を下向きにする */
+            border-top: 30px solid red;
             z-index: 10;
         }
         button {
@@ -113,17 +113,6 @@
         let angle = 0;
         let spinning = false;
 
-        function setCookie(name, value, days) {
-            let date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
-        }
-
-        function getCookie(name) {
-            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-            return match ? match[2] : null;
-        }
-
         function drawWheel() {
             let startAngle = 0;
             let sliceAngle = (2 * Math.PI) / prizes.length;
@@ -149,25 +138,36 @@
         drawWheel();
 
         button.addEventListener("click", function() {
-            let lastPlay = getCookie("roulettePlayed");
-            if (lastPlay === new Date().toDateString()) {
-                resultDisplay.innerText = "今日はもう回せません！";
-                return;
-            }
-
             if (spinning) return;
             spinning = true;
 
-            let spinAngle = Math.random() * 360 + 360 * 5;
-            let finalAngle = spinAngle % 360;
-            let sliceAngle = 360 / prizes.length;
-            let winningIndex = Math.floor((360 - finalAngle + sliceAngle / 2) % 360 / sliceAngle);
+            let spinAngle = Math.random() * 360 + 360 * 5;  // ランダム回転
+            let finalAngle = angle + spinAngle;
+            let duration = 3000;
+            let startTime = null;
 
-            setTimeout(() => {
-                resultDisplay.innerText = `結果：${prizes[winningIndex]} 🎉`;
-                setCookie("roulettePlayed", new Date().toDateString(), 1);
-                spinning = false;
-            }, 3000);
+            function animate(currentTime) {
+                if (!startTime) startTime = currentTime;
+                let progress = (currentTime - startTime) / duration;
+
+                if (progress < 1) {
+                    angle += (finalAngle - angle) * 0.05;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.save();
+                    ctx.translate(150, 150);
+                    ctx.rotate(angle * Math.PI / 180);
+                    ctx.translate(-150, -150);
+                    drawWheel();
+                    ctx.restore();
+                    requestAnimationFrame(animate);
+                } else {
+                    let winningIndex = Math.floor(((360 - ((angle + 90) % 360)) / 36) % 10); // 0°に来る番号
+                    resultDisplay.innerText = `結果：${winningIndex + 1} ${prizes[winningIndex]} 🎉`;
+                    spinning = false;
+                }
+            }
+
+            requestAnimationFrame(animate);
         });
     </script>
 </body>
