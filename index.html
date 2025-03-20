@@ -31,17 +31,18 @@
             border: 4px solid #333;
             background: white;
             border-radius: 50%;
+            margin-top: 40px; /* 三角との距離を確保 */
         }
         #pointer {
             position: absolute;
-            top: 30px;
+            top: 0px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-bottom: 30px solid red;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid red; /* 三角を下向きにする */
             z-index: 10;
         }
         button {
