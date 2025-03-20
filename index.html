@@ -69,6 +69,7 @@
             transform: translateY(1px);
         }
         #result { font-size: 24px; font-weight: bold; margin-top: 20px; color: #d9534f; }
+        #line-instruction {display: none; font-size: 18px; color: #d9534f; font-weight: bold;}
     </style>
 </head>
 <body>
@@ -79,18 +80,20 @@
         <canvas id="wheel" width="300" height="300"></canvas>
         <button id="spin">回す</button>
         <p id="result"></p>
+        <!-- スクショの案内メッセージ -->
+        <p id="line-instruction">🎯 スクショして active の LINE に送ってね！ 📲</p>
 
         <div id="prize-list">
             <p><strong>景品リスト</strong></p>
             <p>1: コンビニドリンク無料券</p>
             <p>2: エナジードリンク無料券</p>
             <p>3: おにぎりorサンドイッチ券</p>
-            <p>4: カップ麺無料券</p>
-            <p>5: QUOカード500円分</p>
-            <p>6: Amazonギフト券500円分</p>
-            <p>7: 休憩時間10分延長券</p>
-            <p>8: タオル or 作業用軍手</p>
-            <p>9: 缶ビール1本無料券</p>
+            <p>4: ハズレ</p>
+            <p>5: ハズレ</p>
+            <p>6: ハズレ</p>
+            <p>7: ハズレ</p>
+            <p>8: 作業用軍手</p>
+            <p>9: ハズレ</p>
             <p>10: ハズレ</p>
         </div>
     </div>
@@ -163,6 +166,10 @@
                 } else {
                     let winningIndex = Math.floor(((360 - ((angle + 90) % 360)) / 36) % 10); // 0°に来る番号
                     resultDisplay.innerText = `結果：${winningIndex + 1} ${prizes[winningIndex]} 🎉`;
+
+                    // スクショ案内を表示
+                    document.getElementById("line-instruction").style.display = "block";
+
                     spinning = false;
                 }
             }
