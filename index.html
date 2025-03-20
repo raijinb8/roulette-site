@@ -114,9 +114,16 @@
         const resultDisplay = document.getElementById("result");
 
         const prizes = [
-            "コンビニドリンク無料券", "エナジードリンク無料券", "おにぎりorサンドイッチ券", 
-            "カップ麺無料券", "QUOカード500円分", "Amazonギフト券500円分",
-            "休憩時間10分延長券", "タオル or 作業用軍手", "缶ビール1本無料券", "ハズレ"
+            "コンビニドリンク無料券", 
+            "エナジードリンク無料券",
+            "おにぎりorサンドイッチ券",
+            "ハズレ",
+            "ハズレ",
+            "ハズレ",
+            "ハズレ",
+            "作業用軍手",
+            "ハズレ",
+            "ハズレ"
         ];
         
         const colors = ["#FFDD57", "#FFAA55", "#FF7755", "#FF5566", "#DD5577",
@@ -149,7 +156,33 @@
 
         drawWheel();
 
+        // Cookieを設定する関数（1日有効）
+        function setCookie(name, value, days) {
+            let date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
+        }
+
+        // Cookieを取得する関数
+        function getCookie(name) {
+            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
+        function generateAuthCode() {
+            return Math.random().toString(36).substr(2, 8).toUpperCase(); // 8桁の英数字
+        }
+
         button.addEventListener("click", function() {
+            let lastPlay = getCookie("roulettePlayed");
+            let today = new Date();
+            let formattedDate = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`;
+
+            if (lastPlay === formattedDate) {
+                resultDisplay.innerText = "今日はもう回せません！";
+                return;
+            }
+
             if (spinning) return;
             spinning = true;
 
@@ -157,10 +190,6 @@
             let finalAngle = angle + spinAngle;
             let duration = 3000;
             let startTime = null;
-
-            function generateAuthCode() {
-                return Math.random().toString(36).substr(2, 8).toUpperCase(); // 8桁の英数字
-            }
 
             function animate(currentTime) {
                 if (!startTime) startTime = currentTime;
@@ -181,18 +210,19 @@
                     resultDisplay.innerText = `結果：${winningIndex + 1} ${prizes[winningIndex]} 🎉`;
 
                     // 日付を取得して表示
-                    let today = new Date();
-                    let formattedDate = `${today.getFullYear()}/${today.getMonth() + 1}/${today.getDate()}`;
                     document.getElementById("current-date").innerText = formattedDate;
                     document.getElementById("date-today").style.display = "block";
 
-                    // 認証コードを生成・表示
-                    let authCode = generateAuthCode();
-                    document.getElementById("unique-code").innerText = authCode;
-                    document.getElementById("auth-code").style.display = "block";
+                    if (prizes[winningIndex] !== "ハズレ") {
+                        // 当たりの場合のみ、認証コードとスクショ案内を表示
+                        let authCode = generateAuthCode();
+                        document.getElementById("unique-code").innerText = authCode;
+                        document.getElementById("auth-code").style.display = "block";
+                        document.getElementById("line-instruction").style.display = "block";
+                    }
 
-                    // スクショ案内を表示
-                    document.getElementById("line-instruction").style.display = "block";
+                    // 1日1回制限のクッキーを設定
+                    setCookie("roulettePlayed", formattedDate, 1);
 
                     spinning = false;
                 }
