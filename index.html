@@ -207,7 +207,7 @@
                     requestAnimationFrame(animate);
                 } else {
                     let winningIndex = Math.floor(((360 - ((angle + 90) % 360)) / 36) % 10); // 0°に来る番号
-                    resultDisplay.innerText = `結果：${winningIndex + 1} ${prizes[winningIndex]} 🎉`;
+                    resultDisplay.innerText = `結果：${winningIndex + 1} ${prizes[winningIndex]}`;
 
                     // 日付を取得して表示
                     document.getElementById("current-date").innerText = formattedDate;
@@ -219,6 +219,7 @@
                         document.getElementById("unique-code").innerText = authCode;
                         document.getElementById("auth-code").style.display = "block";
                         document.getElementById("line-instruction").style.display = "block";
+                        resultDisplay.innerText += " 🎉";  // 当たりのときだけクラッカーを追加
                     } else {
                         resultDisplay.innerText += "\n💡 また明日挑戦してね！";
                     }
