@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ルーレット</title>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        #roulette { font-size: 24px; padding: 20px; border: 2px solid #000; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>1日1回ルーレット！</h2>
+    <button id="roulette">回す</button>
+    <p id="result"></p>
+
+    <script>
+        // クッキーを設定する関数（1日有効）
+        function setCookie(name, value, days) {
+            let date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
+        }
+
+        // クッキーを取得する関数
+        function getCookie(name) {
+            let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : null;
+        }
+
+        document.getElementById("roulette").addEventListener("click", function() {
+            let lastPlay = getCookie("roulettePlayed");
+
+            if (lastPlay === new Date().toDateString()) {
+                document.getElementById("result").innerText = "今日はもう回せません！";
+                return;
+            }
+
+            let outcomes = ["🎉 当たり！ジュース券GET！", "💦 はずれ...また明日！"];
+            let result = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+            document.getElementById("result").innerText = result;
+            setCookie("roulettePlayed", new Date().toDateString(), 1);
+        });
+    </script>
+</body>
+</html>
